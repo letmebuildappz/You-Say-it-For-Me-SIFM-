@@ -72,9 +72,27 @@
     .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
     @media (max-width: 480px) { .api-row { grid-template-columns: 1fr; } .situations { grid-template-columns: 1fr 1fr; } }
+
+    /* Dark mode toggle */
+    .theme-toggle { position: fixed; top: 1.25rem; right: 1.25rem; background: var(--surface); border: 0.5px solid var(--border); border-radius: 100px; padding: 6px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; z-index: 100; }
+    .theme-toggle:hover { border-color: var(--border2); color: var(--text); }
+
+    /* Manual dark mode override */
+    body.dark {
+      --bg: #111110; --surface: #1c1c1a; --surface2: #252523;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --text: #f0efe9; --muted: #999; --hint: #666; --accent-light: #2a1a15;
+    }
+    body.light {
+      --bg: #f7f6f3; --surface: #ffffff; --surface2: #f2f1ee;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.2);
+      --text: #1a1a1a; --muted: #666; --hint: #999; --accent-light: #fdf1ee;
+    }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" id="themeToggle"><i class="ti ti-moon"></i> Dark</button>
+
   <div class="app">
     <header class="header">
       <h1>Say it <em>for me.</em></h1>
@@ -163,6 +181,25 @@
   </div>
 
   <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let isDark = localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : prefersDark;
+
+    function applyTheme() {
+      document.body.classList.toggle('dark', isDark);
+      document.body.classList.toggle('light', !isDark);
+      themeToggle.innerHTML = isDark ? '<i class="ti ti-sun"></i> Light' : '<i class="ti ti-moon"></i> Dark';
+    }
+
+    applyTheme();
+
+    themeToggle.addEventListener('click', () => {
+      isDark = !isDark;
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applyTheme();
+    });
+
     const ENDPOINTS = {
       anthropic: 'https://api.anthropic.com/v1/messages',
       openai:    'https://api.openai.com/v1/chat/completions',
