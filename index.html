@@ -74,8 +74,8 @@
     @media (max-width: 480px) { .api-row { grid-template-columns: 1fr; } .situations { grid-template-columns: 1fr 1fr; } }
 
     /* Dark mode toggle */
-    .theme-toggle { position: fixed; top: 1.25rem; right: 1.25rem; background: var(--surface); border: 0.5px solid var(--border); border-radius: 100px; padding: 6px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; z-index: 100; }
-    .theme-toggle:hover { border-color: var(--border2); color: var(--text); }
+    .theme-toggle { position: fixed; top: 1.25rem; right: 1.25rem; background: var(--accent); border: none; border-radius: 100px; padding: 8px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; z-index: 9999; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    .theme-toggle:hover { opacity: 0.88; }
 
     /* Manual dark mode override */
     body.dark {
@@ -157,7 +157,7 @@
         </div>
       </div>
       <div class="api-section" id="apiSection">
-        <div class="field-label">Your API Key <span class="hint">(stored only in this session)</span></div>
+        <div class="field-label">Your API Key <span class="hint">(saved in your browser)</span></div>
         <input type="password" id="apiKey" placeholder="Paste your key here..." autocomplete="off" />
       </div>
     </div>
@@ -228,6 +228,21 @@
         btn.classList.add('active');
         selectedTone = btn.dataset.val;
       });
+    });
+
+    // Load saved API key on page load
+    const savedKey = localStorage.getItem('sifm_api_key');
+    if (savedKey) {
+      document.getElementById('apiKey').value = savedKey;
+      document.getElementById('apiSection').classList.add('visible');
+      document.getElementById('keyToggle').textContent = 'Hide API key';
+    }
+
+    // Save API key when user types
+    document.getElementById('apiKey').addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      if (val) localStorage.setItem('sifm_api_key', val);
+      else localStorage.removeItem('sifm_api_key');
     });
 
     document.getElementById('keyToggle').addEventListener('click', () => {
